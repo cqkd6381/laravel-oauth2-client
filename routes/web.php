@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+/****************************手动授权-开始**************************/
+
 //authorization_code 授权码模式(即先登录获取code,再获取token)
 Route::get('/redirect', function () {
     $query = http_build_query([
@@ -60,6 +62,11 @@ Route::get('/implicit/callback', function (\Illuminate\Http\Request $request) {
     echo "参数可从URL中#后面获取\n";
     echo $request->url();
 });
+
+/****************************手动授权-结束**************************/
+
+Route::get('/login/another','Auth\LoginController@redirectToAnotherProvider')->name('another');
+Route::get('/login/another/callback','Auth\LoginController@handleAnotherProviderCallback');
 
 Auth::routes();
 

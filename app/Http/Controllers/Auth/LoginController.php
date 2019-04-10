@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Socialite;
 
 class LoginController extends Controller
 {
@@ -35,5 +37,47 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    /**
+     * Redirect the user to the Another authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToAnotherProvider()
+    {
+        return Socialite::driver('another')->redirect();
+    }
+
+    /**
+     * Obtain the user information from Another.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleAnotherProviderCallback()
+    {
+        $user = Socialite::driver('another')->user();
+
+        $existUser = User::where([
+            ['openid','=',$user->getId()],
+            ['platform','=','another'],
+        ])->first();
+        if($existUser){
+            \Auth::login($existUser);
+            return redirect('/home');
+        }
+
+        $user = User::create([
+            'openid' => $user->getId(),
+            'name' => $user->getNickname(),
+            'email'=> $user->getEmail(),
+            'password' => bcrypt('12345678'),
+            'platform' => 'another',
+            'email_verified_at' => now()
+        ]);
+
+        \Auth::login($user);
+
+        return redirect('/home');
     }
 }

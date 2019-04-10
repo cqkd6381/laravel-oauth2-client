@@ -43,5 +43,10 @@ return [
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],
+    'another' => [
+        'client_id' => '8',
+        'client_secret' => 't5k71N3r2raPyhdbAZeqm9cUuVfYPSnbVNLznO9R',
+        'redirect' => 'http://laravel-oauth2-client.test/login/another/callback',
+    ],
 
 ];
